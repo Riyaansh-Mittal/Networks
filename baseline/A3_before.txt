@@ -81,6 +81,7 @@ LocalNameServer (ip 30.0.1.2, port 53): update(current_time=9, info_list=None)
 Network n0: Forwarding packet to 30.0.1.2 over interface n0-eth2
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=10, info_list=None)
 LocalNameServer (ip 30.0.1.2, port 53): Received packet <type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www.example.com>
+LocalNameServer (ip 30.0.1.2, port 53): Cache miss for www.example.com
 LocalNameServer (ip 30.0.1.2, port 53): Sending upstream query <type dns src 30.0.1.2:53 dst 20.0.1.2:53 payload DNS query for www.example.com>
 
 = Time 11 =
@@ -88,6 +89,7 @@ LocalNameServer (ip 30.0.1.2, port 53): Sending upstream query <type dns src 30.
 Network n0: Forwarding packet to 20.0.1.2 over interface n0-eth1
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=11, info_list=None)
 LocalNameServer (ip 30.0.1.2, port 53): Received packet <type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for mail.example.com>
+LocalNameServer (ip 30.0.1.2, port 53): Cache miss for mail.example.com
 LocalNameServer (ip 30.0.1.2, port 53): Sending upstream query <type dns src 30.0.1.2:53 dst 20.0.1.2:53 payload DNS query for mail.example.com>
 
 = Time 12 =
@@ -157,36 +159,14 @@ LocalNameServer (ip 30.0.1.2, port 53): update(current_time=17, info_list=None)
 
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=18, info_list=None)
 LocalNameServer (ip 30.0.1.2, port 53): Received packet <type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for mail.example.com>
-LocalNameServer (ip 30.0.1.2, port 53): Sending upstream query <type dns src 30.0.1.2:53 dst 20.0.1.2:53 payload DNS query for mail.example.com>
+LocalNameServer (ip 30.0.1.2, port 53): Cache hit, sending response <type dns src 30.0.1.2:53 dst 10.0.0.1:53 payload DNS reply for mail.example.com>
 
 = Time 19 =
 
-Network n0: Forwarding packet to 20.0.1.2 over interface n0-eth1
+Network n0: Forwarding packet to 10.0.0.1 over interface n0-eth0
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=19, info_list=None)
 
 = Time 20 =
-
-AuthoritativeNameServer (ip 20.0.1.2, port 53): Received packet <type dns src 30.0.1.2:53 dst 20.0.1.2:53 payload DNS query for mail.example.com>
-AuthoritativeNameServer (ip 20.0.1.2, port 53): Sending packet <type dns src 20.0.1.2:53 dst 30.0.1.2:53 payload DNS reply for mail.example.com>
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=20, info_list=None)
-
-= Time 21 =
-
-Network n0: Forwarding packet to 30.0.1.2 over interface n0-eth2
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=21, info_list=None)
-
-= Time 22 =
-
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=22, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): Received packet <type dns src 20.0.1.2:53 dst 30.0.1.2:53 payload DNS reply for mail.example.com>
-LocalNameServer (ip 30.0.1.2, port 53): Sending response to client <type dns src 30.0.1.2:53 dst 10.0.0.1:53 payload DNS reply for mail.example.com>
-
-= Time 23 =
-
-Network n0: Forwarding packet to 10.0.0.1 over interface n0-eth0
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=23, info_list=None)
-
-= Time 24 =
 
 DnsClient (ip 10.0.0.1, port 53): Received DNS reply for queried name mail.example.com
 ;; Got answer:
@@ -197,16 +177,32 @@ DnsClient (ip 10.0.0.1, port 53): Received DNS reply for queried name mail.examp
 ;mail.example.com		IN	A
 
 ;; ANSWER SECTION:
-mail.example.com		7200	IN	A	20.0.1.7
+mail.example.com		7197	IN	A	20.0.1.7
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=20, info_list=None)
+
+= Time 21 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=21, info_list=None)
+
+= Time 22 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=22, info_list=None)
+
+= Time 23 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=23, info_list=None)
+
+= Time 24 =
 
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=24, info_list=None)
 
 
 ** Simulation Report **
 
-Data-plane traffic stats for n0: fwd 15 drop 0
+Data-plane traffic stats for n0: fwd 13 drop 0
 
-Total number of DNS packets crossing the network: 12
+Total number of DNS packets crossing the network: 10
 Total number of DNS queries sent by clients: 3
 Total number of DNS replies received by clients: 3
 Total number of DNS replies including an IP for the queried name: 3
@@ -253,9 +249,7 @@ mail.example.com		7200	IN	A	20.0.1.7
 
 DNS trace to resolve mail.example.com for h0 at time 17
  1 h0 -> h2: query for name mail.example.com (QID 3, RID h0:53/3)
- 2 h2 -> h1: query for name mail.example.com (QID 3, RID h0:53/3)
- 3 h1 -> h2: reply (QID 3, RID h0:53/3)
- 4 h2 -> h0: reply (QID 3, RID h0:53/3)
+ 2 h2 -> h0: reply (QID 3, RID h0:53/3)
 
 Final DNS reply received by client (ip 10.0.0.1, port 53) for name mail.example.com
 ;; Got answer:
@@ -266,12 +260,12 @@ Final DNS reply received by client (ip 10.0.0.1, port 53) for name mail.example.
 ;mail.example.com		IN	A
 
 ;; ANSWER SECTION:
-mail.example.com		7200	IN	A	20.0.1.7
+mail.example.com		7197	IN	A	20.0.1.7
 
 
 ** Revenue Report **
 
-Total revenues: 450.00
+Total revenues: 480.00
 + events
   - query 1 from h0 for www.example.com at time 9 (answered): total revenue 170.00
     > times 9-14: query for www.example.com not yet answered --> revenue -5.00 each step
@@ -279,10 +273,10 @@ Total revenues: 450.00
   - query 2 from h0 for mail.example.com at time 10 (answered): total revenue 170.00
     > times 10-15: query for mail.example.com not yet answered --> revenue -5.00 each step
     > time 16: query for mail.example.com was answered with an IP address --> revenue 200.00
-  - query 3 from h0 for mail.example.com at time 17 (answered): total revenue 170.00
-    > times 17-22: query for mail.example.com not yet answered --> revenue -5.00 each step
-    > time 23: query for mail.example.com was answered with an IP address --> revenue 200.00
+  - query 3 from h0 for mail.example.com at time 17 (answered): total revenue 190.00
+    > times 17-18: query for mail.example.com not yet answered --> revenue -5.00 each step
+    > time 19: query for mail.example.com was answered with an IP address --> revenue 200.00
 + DNS packets
-  - total number of DNS packets: 12 --> revenue -60.00
+  - total number of DNS packets: 10 --> revenue -50.00
 
 

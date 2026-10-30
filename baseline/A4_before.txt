@@ -67,6 +67,7 @@ LocalNameServer (ip 30.0.1.2, port 53): update(current_time=9, info_list=None)
 
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=10, info_list=None)
 LocalNameServer (ip 30.0.1.2, port 53): Received packet <type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www.example.com.>
+LocalNameServer (ip 30.0.1.2, port 53): Cache miss for www.example.com.
 LocalNameServer (ip 30.0.1.2, port 53): Sending upstream query <type dns src 30.0.1.2:53 dst 40.0.1.2:53 payload DNS query for www.example.com.>
 
 = Time 11 =
@@ -136,6 +137,7 @@ LocalNameServer (ip 30.0.1.2, port 53): update(current_time=21, info_list=None)
 
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=22, info_list=None)
 LocalNameServer (ip 30.0.1.2, port 53): Received packet <type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www2.example.com.>
+LocalNameServer (ip 30.0.1.2, port 53): Cache miss for www2.example.com.
 LocalNameServer (ip 30.0.1.2, port 53): Sending upstream query <type dns src 30.0.1.2:53 dst 40.0.1.2:53 payload DNS query for www2.example.com.>
 
 = Time 23 =
