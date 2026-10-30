@@ -126,7 +126,7 @@ mail.example.com		600	IN	A	20.0.1.6
 DnsClient (ip 10.0.0.1, port 53): Received DNS reply for queried name www.example.com.
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 3
-;; flags: qr rd; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
 
 ;; QUESTION SECTION:
 ;www.example.com.		IN	A
@@ -194,7 +194,7 @@ DNS trace to resolve www.example.com. for h0 at time 15
 Final DNS reply received by client (ip 10.0.0.1, port 53) for name www.example.com.
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 3
-;; flags: qr rd; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
 
 ;; QUESTION SECTION:
 ;www.example.com.		IN	A

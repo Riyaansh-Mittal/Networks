@@ -147,16 +147,19 @@ class LocalNameServer(Application):
         print("LocalNameServer (ip {}, port {}): set_parameters({})".format(
             self._ip, self._port, parameters))
 
+    
     def _get_query_key(self, packet):
         payload = packet.get_payload()
         header = payload.get_header()
         question = payload.get_question()
 
         return (
-            header.get_query_id(),
             header.get_resolution_id(),
-            question.get_dns_name().lower().rstrip(".")
+            header.get_query_id(),
+            question.get_dns_name().lower().rstrip("."),
+            question.get_question_type()
         )
+
 
     def _get_cache_key(self, question):
         return (
