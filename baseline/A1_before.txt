@@ -126,10 +126,13 @@ mail.example.com		600	IN	A	20.0.1.6
 DnsClient (ip 10.0.0.1, port 53): Received DNS reply for queried name www.example.com.
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 3
-;; flags: qr rd; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
+;; flags: qr rd; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
 
 ;; QUESTION SECTION:
 ;www.example.com.		IN	A
+
+;; ANSWER SECTION:
+www.example.com.		600	IN	A	20.0.1.5
 
 
 = Time 19 =
@@ -146,7 +149,7 @@ Data-plane traffic stats for n0: fwd 9 drop 0
 Total number of DNS packets crossing the network: 6
 Total number of DNS queries sent by clients: 3
 Total number of DNS replies received by clients: 3
-Total number of DNS replies including an IP for the queried name: 2
+Total number of DNS replies including an IP for the queried name: 3
 
 = DNS query 1 =
 
@@ -191,15 +194,18 @@ DNS trace to resolve www.example.com. for h0 at time 15
 Final DNS reply received by client (ip 10.0.0.1, port 53) for name www.example.com.
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 3
-;; flags: qr rd; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
+;; flags: qr rd; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
 
 ;; QUESTION SECTION:
 ;www.example.com.		IN	A
 
+;; ANSWER SECTION:
+www.example.com.		600	IN	A	20.0.1.5
+
 
 ** Revenue Report **
 
-Total revenues: 360.00
+Total revenues: 540.00
 + events
   - query 1 from h0 for www.example.com at time 9 (answered): total revenue 190.00
     > times 9-10: query for www.example.com not yet answered --> revenue -5.00 each step
@@ -207,9 +213,9 @@ Total revenues: 360.00
   - query 2 from h0 for mail.example.com at time 15 (answered): total revenue 190.00
     > times 15-16: query for mail.example.com not yet answered --> revenue -5.00 each step
     > time 17: query for mail.example.com was answered with an IP address --> revenue 200.00
-  - query 3 from h0 for www.example.com. at time 15 (answered): total revenue 10.00
+  - query 3 from h0 for www.example.com. at time 15 (answered): total revenue 190.00
     > times 15-16: query for www.example.com. not yet answered --> revenue -5.00 each step
-    > time 17: query for www.example.com. was answered with no IP address --> revenue 20.00
+    > time 17: query for www.example.com. was answered with an IP address --> revenue 200.00
 + DNS packets
   - total number of DNS packets: 6 --> revenue -30.00
 

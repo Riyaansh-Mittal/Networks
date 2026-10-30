@@ -12,14 +12,28 @@ class AuthoritativeNameServer(Application):
 
     def set_parameters(self, parameters):
         if "records A" in parameters:
-            self._a_records = {name: records[0] for name, records in parameters["records A"].items()}
+            self._a_records = {
+                self._normalize_name(name): records[0]
+                for name, records in parameters["records A"].items()
+            }
+
         if "records NS" in parameters:
-            self._ns_records = {name: records[0] for name, records in parameters["records NS"].items()}
+            self._ns_records = {
+                self._normalize_name(name): records[0]
+                for name, records in parameters["records NS"].items()
+            }
+
         if "zones" in parameters:
-            self._authoritative_zones = set(parameters["zones"])
+            self._authoritative_zones = {
+                self._normalize_name(zone)
+                for zone in parameters["zones"]
+            }
 
     def bind_to_host(self, endhost_id, endhost_ip):
         self._ip = endhost_ip
+        
+    def _normalize_name(self, name):
+        return name.rstrip(".").lower()
 
     def process_packet(self, packet):
         print("AuthoritativeNameServer (ip {}, port {}): Received packet {}".format(self._ip, self._port, str(packet)))
@@ -39,7 +53,7 @@ class AuthoritativeNameServer(Application):
             is_authoritative = False
             for zone in self._authoritative_zones:
                 if dns_name.endswith(zone):
-                    is_authoritative = True
+                    is_authoritative = self._is_authoritative_for(dns_name)
                     break
 
             reply_header = DnsHeader(
@@ -60,15 +74,34 @@ class AuthoritativeNameServer(Application):
         
         self._pending_queries = []
         return replies
+        
+    def _is_authoritative_for(self, dns_name):
+        name = self._normalize_name(dns_name)
+
+        return any(
+            name == zone or name.endswith("." + zone)
+            for zone in self._authoritative_zones
+        )
 
     def _get_dns_records(self, dns_name):
         answer = []
         authority = []
         additional = []
-        if dns_name in self._a_records:
-            record = self._a_records[dns_name]
-            answer = [DnsResourceRecord(dnsName=dns_name, recordType="A", dnsTtl=record["ttl"], rrData=record["ip"])]
-        return (answer, authority, additional)
+
+        normalized_name = self._normalize_name(dns_name)
+        record = self._a_records.get(normalized_name)
+
+        if record is not None:
+            answer = [
+                DnsResourceRecord(
+                    dnsName=dns_name,
+                    recordType="A",
+                    dnsTtl=record["ttl"],
+                    rrData=record["ip"]
+                )
+            ]
+
+        return answer, authority, additional
 
 class LocalNameServer(Application):
     def __init__(self, port):
