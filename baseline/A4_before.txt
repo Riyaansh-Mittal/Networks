@@ -1,0 +1,222 @@
+
+** Configuration Loading **
+
+Reading file tests-configs/A4.json
+Created network node n0
+Created end-host h0
+Created end-host h1
+Created end-host h2
+Created end-host h3
+LocalNameServer (ip 30.0.1.2, port 53): bind_to_host(endhost_id=h2, endhost_ip=30.0.1.2)
+LocalNameServer (ip 30.0.1.2, port 53): set_parameters({'root nameserver': {'name': 'u.root-servers.net', 'ip': '40.0.1.2', 'port': 53, 'ttl': 3600000}})
+Adding link (n0.n0-eth0 <--> h0.h0-eth0) to n0
+Adding link (n0.n0-eth0 <--> h0.h0-eth0) to end-host h0
+Adding link (n0.n0-eth1 <--> h1.h1-eth0) to n0
+Adding link (n0.n0-eth1 <--> h1.h1-eth0) to end-host h1
+Adding link (n0.n0-eth2 <--> h2.h2-eth0) to n0
+Adding link (n0.n0-eth2 <--> h2.h2-eth0) to end-host h2
+Adding link (n0.n0-eth3 <--> h3.h3-eth0) to n0
+Adding link (n0.n0-eth3 <--> h3.h3-eth0) to end-host h3
+Adding Event 'sendquery' occurring at time 8 with parameters ['10.0.0.1', 53, '30.0.1.2', 53, 'www.example.com.', 'A']
+Adding Event 'sendquery' occurring at time 20 with parameters ['10.0.0.1', 53, '30.0.1.2', 53, 'www2.example.com.', 'A']
+
+
+** Simulation **
+
+= Time 1 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=1, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 2 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=2, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 3 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=3, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 4 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=4, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 5 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=5, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 6 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=6, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 7 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=7, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 8 =
+
+Event 'sendquery' occurring at time 8 with parameters ['10.0.0.1', 53, '30.0.1.2', 53, 'www.example.com.', 'A']
+
+DnsClient (ip 10.0.0.1, port 53): Sending packet <type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www.example.com.>
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=8, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 9 =
+
+Network n0: Forwarding packet to 30.0.1.2 over interface n0-eth2
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=9, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 10 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=10, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): process_packet(<type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www.example.com.>)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 11 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=11, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 12 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=12, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 13 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=13, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 14 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=14, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 15 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=15, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 16 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=16, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 17 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=17, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 18 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=18, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 19 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=19, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 20 =
+
+Event 'sendquery' occurring at time 20 with parameters ['10.0.0.1', 53, '30.0.1.2', 53, 'www2.example.com.', 'A']
+
+DnsClient (ip 10.0.0.1, port 53): Sending packet <type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www2.example.com.>
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=20, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 21 =
+
+Network n0: Forwarding packet to 30.0.1.2 over interface n0-eth2
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=21, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 22 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=22, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): process_packet(<type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www2.example.com.>)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 23 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=23, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 24 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=24, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 25 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=25, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 26 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=26, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 27 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=27, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 28 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=28, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 29 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=29, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+= Time 30 =
+
+LocalNameServer (ip 30.0.1.2, port 53): update(current_time=30, info_list=None)
+LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+
+
+** Simulation Report **
+
+Data-plane traffic stats for n0: fwd 2 drop 0
+
+Total number of DNS packets crossing the network: 2
+Total number of DNS queries sent by clients: 2
+Total number of DNS replies received by clients: 0
+Total number of DNS replies including an IP for the queried name: 0
+
+= DNS query 1 =
+
+DNS trace to resolve www.example.com. for h0 at time 9
+ 1 h0 -> h2: query for name www.example.com. (QID 1, RID h0:53/1)
+
+No DNS reply received by client (ip 10.0.0.1, port 53) for name www.example.com. before the end of the simulation
+
+= DNS query 2 =
+
+DNS trace to resolve www2.example.com. for h0 at time 21
+ 1 h0 -> h2: query for name www2.example.com. (QID 2, RID h0:53/2)
+
+No DNS reply received by client (ip 10.0.0.1, port 53) for name www2.example.com. before the end of the simulation
+
+
+** Revenue Report **
+
+Total revenues: -6410.00
++ events
+  - query 1 from h0 for www.example.com. at time 9 (never answered): total revenue -4400.00
+    > times 9-30: query never answered --> revenue -200.00 each step
+  - query 2 from h0 for www2.example.com. at time 21 (never answered): total revenue -2000.00
+    > times 21-30: query never answered --> revenue -200.00 each step
++ DNS packets
+  - total number of DNS packets: 2 --> revenue -10.00
+
+

@@ -1,0 +1,157 @@
+{
+  "network": {
+    "nId": "n0"
+  },
+  "endhosts": [
+    {
+      "eId": "h1",
+      "ipAddress": "10.0.0.1"
+    },
+    {
+      "eId": "h309",
+      "ipAddress": "20.0.1.2",
+      "contentServers": ["20.0.1.4"] 
+    },
+    {
+      "eId": "h3",
+      "ipAddress": "30.0.1.2"
+    },
+    {
+      "eId": "h27",
+      "ipAddress": "40.0.0.4",
+      "contentServers": ["40.0.0.12", "40.0.0.13"]
+    },
+    {
+      "eId": "h5",
+      "ipAddress": "50.0.10.1",
+      "contentServers": ["50.0.20.1", "50.0.20.2", "50.0.20.3"] 
+    },
+    {
+      "eId": "h6",
+      "ipAddress": "60.0.5.1"
+    },
+    {
+      "eId": "h7",
+      "ipAddress": "70.0.0.1",
+      "contentServers": ["70.0.20.1", "70.0.20.2", "70.0.20.3", "70.0.20.4"]
+    },
+    {
+      "eId": "h8",
+      "ipAddress": "80.0.0.1"
+    }
+  ],
+  "network-links": [
+    {
+      "id": "link-h1",
+      "interfaces": ["n0-eth0", "h1-eth0"],
+      "interface_ips": ["10.0.0.2", "10.0.0.1"],
+      "status": "up",
+      "properties": {"delay": 2}
+    },
+    {
+      "id": "link-h309",
+      "interfaces": ["n0-eth1", "h309-eth0"],
+      "interface_ips": ["20.0.1.1", "20.0.1.2"],
+      "status": "up",
+      "properties": {"delay": 3}
+    },
+    {
+      "id": "link-h3",
+      "interfaces": ["n0-eth2", "h3-eth0"],
+      "interface_ips": ["30.0.1.1", "30.0.1.2"],
+      "status": "up",
+      "properties": {"delay": 3}
+    },
+    {
+      "id": "link-h27",
+      "interfaces": ["n0-eth3", "h27-if1"],
+      "interface_ips": ["40.0.0.2", "40.0.0.4"],
+      "status": "up",
+      "properties": {"delay": 4}
+    },
+    {
+      "id": "link-h5",
+      "interfaces": ["n0-eth4", "h5-eth0"],
+      "interface_ips": ["50.0.10.2", "50.0.10.1"],
+      "status": "up",
+      "properties": {"delay": 2}
+    },
+    {
+      "id": "link-h6",
+      "interfaces": ["n0-eth5", "h6-if0"],
+      "interface_ips": ["60.0.5.2", "60.0.5.1"],
+      "status": "up",
+      "properties": {"delay": 1}
+    },
+    {
+      "id": "link-h7",
+      "interfaces": ["n0-eth6", "h7-if0"],
+      "interface_ips": ["70.0.0.2", "70.0.0.1"],
+      "status": "up",
+      "properties": {"delay": 1}
+    },
+    {
+      "id": "link-h8",
+      "interfaces": ["n0-eth8", "h8-if0"],
+      "interface_ips": ["80.0.0.2", "80.0.0.1"],
+      "status": "up",
+      "properties": {"delay": 4}
+    }
+  ],
+  "applications": [
+    {
+      "eId": "h1",
+      "type": "ContentClient",
+      "port": 53
+    },
+    {
+      "eId": "h3",
+      "type": "LocalNameServer",
+      "port": 53,
+      "parameters": {
+        "root nameserver": {
+          "name": "ns1.example.com.",
+          "ip": "60.0.5.1",
+          "port": 53,
+          "ttl": 7200
+        }
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "allowserverfails",
+      "time": 1
+    },
+    {
+      "type": "downlink",
+      "time": 1,
+      "link": ["n0-eth8", "h8-if0"]
+    },
+    {
+      "type": "accesscontent",
+      "time": 3,
+      "src": "10.0.0.1",
+      "src_port": 53,
+      "dst": "30.0.1.2",
+      "dst_port": 53,
+      "dnsName": "www.example.com.",
+      "questionType": "A",
+      "neededServers": 2
+    },
+    {
+      "type": "accesscontent",
+      "time": 3,
+      "src": "10.0.0.1",
+      "src_port": 53,
+      "dst": "30.0.1.2",
+      "dst_port": 53,
+      "dnsName": "www.example.net.",
+      "questionType": "A"
+    },
+    {
+      "type": "stop",
+      "time": 51
+    }
+ ]
+}

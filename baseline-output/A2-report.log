@@ -1,0 +1,46 @@
+** Simulation Report **
+
+Data-plane traffic stats for n0: fwd 7 drop 0
+
+Total number of DNS packets crossing the network: 4
+Total number of DNS queries sent by clients: 1
+Total number of DNS replies received by clients: 1
+Total number of DNS replies including an IP for the queried name: 1
+
+= DNS query 1 =
+
+DNS trace to resolve www.example.com for h0 at time 9
+ 1 h0 -> h2: query for name www.example.com (QID 1, RID h0:53/1)
+ 2 h2 -> h1: query for name www.example.com. (QID 101, RID h0:53/1)
+ 3 h1 -> h2: reply (QID 101, RID h0:53/1)
+ 4 h2 -> h0: reply (QID 1, RID h0:53/1)
+
+Final DNS reply received by client (ip 10.0.0.1, port 53) for name www.example.com
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 1
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
+
+;; QUESTION SECTION:
+;www.example.com		IN	A
+
+;; ANSWER SECTION:
+www.example.com.		600	IN	A	20.0.1.5
+
+;; AUTHORITY SECTION:
+.				3599986	IN	NS	u.root-servers.net
+
+;; ADDITIONAL SECTION:
+u.root-servers.net		3599986	IN	A	20.0.1.2
+
+
+** Revenue Report **
+
+Total revenues: 150.00
++ events
+  - query 1 from h0 for www.example.com at time 9 (answered): total revenue 170.00
+    > times 9-14: query for www.example.com not yet answered --> revenue -5.00 each step
+    > time 15: query for www.example.com was answered with an IP address --> revenue 200.00
++ DNS packets
+  - total number of DNS packets: 4 --> revenue -20.00
+
+

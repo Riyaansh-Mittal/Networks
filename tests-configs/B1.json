@@ -1,0 +1,118 @@
+{
+  "network": {
+    "nId": "n0"
+  },
+  "endhosts": [
+    {
+      "eId": "h1",
+      "ipAddress": "10.0.0.1"
+    },
+    {
+      "eId": "h2",
+      "ipAddress": "20.0.1.2",
+      "contentServers": ["20.0.1.4", "20.0.1.5"] 
+    },
+    {
+      "eId": "h3",
+      "ipAddress": "30.0.1.2"
+    },
+    {
+      "eId": "h4",
+      "ipAddress": "40.0.0.4",
+      "contentServers": ["40.0.0.12","40.0.0.13"]
+    },
+    {
+      "eId": "h5",
+      "ipAddress": "50.0.10.1",
+      "contentServers": ["50.0.20.1", "50.0.20.2", "50.0.20.3"] 
+    },
+    {
+      "eId": "h6",
+      "ipAddress": "60.0.5.1"
+    }
+  ],
+  "network-links": [
+    {
+      "id": "link-h1",
+      "interfaces": ["n0-eth0", "h1-eth0"],
+      "interface_ips": ["10.0.0.2", "10.0.0.1"],
+      "status": "up",
+      "properties": {"delay": 2}
+    },
+    {
+      "id": "link-h2",
+      "interfaces": ["n0-eth1", "h2-eth0"],
+      "interface_ips": ["20.0.1.1", "20.0.1.2"],
+      "status": "up",
+      "properties": {"delay": 3}
+    },
+    {
+      "id": "link-h3",
+      "interfaces": ["n0-eth2", "h3-eth0"],
+      "interface_ips": ["30.0.1.1", "30.0.1.2"],
+      "status": "up",
+      "properties": {"delay": 4}
+    },
+    {
+      "id": "link-h4",
+      "interfaces": ["n0-eth3", "h4-if1"],
+      "interface_ips": ["40.0.0.2", "40.0.0.4"],
+      "status": "up",
+      "properties": {"delay": 3}
+    },
+    {
+      "id": "link-h5",
+      "interfaces": ["n0-eth4", "h5-eth0"],
+      "interface_ips": ["50.0.10.2", "50.0.10.1"],
+      "status": "up",
+      "properties": {"delay": 2}
+    },
+    {
+      "id": "link-h6",
+      "interfaces": ["n0-eth5", "h6-if0"],
+      "interface_ips": ["60.0.5.2", "60.0.5.1"],
+      "status": "up",
+      "properties": {"delay": 1}
+    }
+  ],
+  "applications": [
+    {
+      "eId": "h1",
+      "type": "ContentClient",
+      "port": 53
+    },
+    {
+      "eId": "h3",
+      "type": "LocalNameServer",
+      "port": 53
+    }
+  ],
+  "events": [
+    {
+      "type": "accesscontent",
+      "time": 3,
+      "src": "10.0.0.1",
+      "src_port": 53,
+      "dst": "30.0.1.2",
+      "dst_port": 53,
+      "dnsName": "www.example.com.",
+      "questionType": "A",
+      "duration": 19
+    },
+    {
+      "type": "accesscontent",
+      "time": 3,
+      "src": "10.0.0.1",
+      "src_port": 53,
+      "dst": "30.0.1.2",
+      "dst_port": 53,
+      "dnsName": "www.example.net.",
+      "questionType": "A",
+      "duration": 22
+    },
+    {
+      "type": "stop",
+      "time": 51
+    }
+ ]
+}

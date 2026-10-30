@@ -1,0 +1,147 @@
+{
+  "network": {
+    "nId": "n0"
+  },
+  "endhosts": [
+    {
+      "eId": "h0",
+      "ipAddress": "10.0.0.1"
+    },
+    {
+      "eId": "h1",
+      "ipAddress": "20.0.1.2"
+    },
+    {
+      "eId": "h2",
+      "ipAddress": "30.0.1.2"
+    },
+    {
+      "eId": "h3",
+      "ipAddress": "40.0.1.2"
+    }
+  ],
+  "network-links": [
+    {
+      "id": "link-h0",
+      "interfaces": ["n0-eth0", "h0-eth0"],
+      "interface_ips": ["10.0.0.2", "10.0.0.1"],
+      "status": "up"
+    },
+    {
+      "id": "link-h1",
+      "interfaces": ["n0-eth1", "h1-eth0"],
+      "interface_ips": ["20.0.1.1", "20.0.1.2"],
+      "status": "up"
+    },
+    {
+      "id": "link-h2",
+      "interfaces": ["n0-eth2", "h2-eth0"],
+      "interface_ips": ["30.0.1.1", "30.0.1.2"],
+      "status": "up"
+    },
+    {
+      "id": "link-h3",
+      "interfaces": ["n0-eth3", "h3-eth0"],
+      "interface_ips": ["40.0.1.1", "40.0.1.2"],
+      "status": "up"
+    }
+  ],
+  "applications": [
+    {
+      "eId": "h0",
+      "type": "DnsClient",
+      "port": 53
+    },
+    {
+      "eId": "h1",
+      "type": "AuthoritativeNameServer",
+      "port": 53,
+      "parameters": {
+        "records A": {
+          "ns1.example.com.": [{
+              "ip": "20.0.1.2",
+              "ttl": 7200
+          }],
+          "www.example.com.": [
+            {
+              "ip": "20.0.1.3",
+              "ttl": 7200
+            }
+          ]
+        },
+        "records CNAME": {
+          "www2.example.com.": [{
+            "alias": "www.example.com.",
+            "ttl": 600
+          }]          
+        },
+        "zones": ["example.com."],
+        "zone admin": "primary nameserver: ns1.example.com; admin contact: admin.example.com; serial number: 2026081001; refresh interval: 7200; retry interval: 3600; expire limit: 1209600; minimum TTL: 3600"
+      }
+    },
+    {
+      "eId": "h2",
+      "type": "LocalNameServer",
+      "port": 53,
+      "parameters": {
+        "root nameserver": {
+          "name": "u.root-servers.net",
+          "ip": "40.0.1.2",
+          "port": 53,
+          "ttl": 3600000
+        }
+      }
+    },
+    {
+      "eId": "h3",
+      "type": "AuthoritativeNameServer",
+      "port": 53,
+      "parameters": {
+        "records A": {
+          "u.root-servers.net.": [{
+            "ip": "40.0.1.2",
+            "ttl": 3600000
+          }]
+        },
+        "records NS": {
+          "example.com.": [
+            {
+              "name": "ns1.example.com.",
+              "namettl": 7200,
+              "ip": "20.0.1.2",
+              "ipttl": 7200
+            }
+          ]
+        },
+        "zones": [".", "com."],
+        "zone admin": "primary nameserver: u.root-servers.net; admin contact: nstld.verisign-grs.com; serial number: 2026081001; refresh interval: 1800; retry interval: 900; expire limit: 604800; minimum TTL: 86400"
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "sendquery",
+      "time": 8,
+      "src": "10.0.0.1",
+      "src_port": 53,
+      "dst": "30.0.1.2",
+      "dst_port": 53,
+      "dnsName": "www.example.com.",
+      "questionType": "A"
+    },
+    {
+      "type": "sendquery",
+      "time": 20,
+      "src": "10.0.0.1",
+      "src_port": 53,
+      "dst": "30.0.1.2",
+      "dst_port": 53,
+      "dnsName": "www2.example.com.",
+      "questionType": "A"
+    },
+    {
+      "type": "stop",
+      "time": 31
+    }
+  ]
+}

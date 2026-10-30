@@ -1,0 +1,26 @@
+** Revenue Report **
+
+Total revenues: 1300.00
++ event 1 is h1:53 accesscontent for www.example.com. at time 3
+  - query 1 from h1:53 to www.example.com.: total revenue 740.00
+    > steps 3-14: no path because name is not resolved yet --> revenue -5.00 each step
+    > steps 15-24: 1 unit of load via 70.0.20.1 with delay 3 vs average delay 5.00 --> revenue 40.00 each step
+    > steps 15-24: 1 unit of load via 70.0.20.3 with delay 3 vs average delay 5.00 --> revenue 40.00 each step
+  - query 3 from h1:53 to www.example.com.: total revenue 340.00
+    > steps 25-32: no path because name is not resolved yet --> revenue -5.00 each step
+    > steps 33-39: 1 unit of load via 70.0.20.3 with delay 3 vs average delay 5.00 --> revenue 40.00 each step
+    > steps 33-42: 1 unit of load via 70.0.20.4 with delay 3 vs average delay 5.00 --> revenue 40.00 each step
+    > steps 40-42: 1 unit of load via 70.0.20.3 with a failed content server --> revenue -100.00 each step
+  - query 5 from h1:53 to www.example.com.: total revenue -40.00
+    > steps 43-50: no path because name is not resolved yet --> revenue -5.00 each step
++ event 2 is h1:53 accesscontent for www.example.net. at time 3
+  - query 2 from h1:53 to www.example.net.: total revenue 140.00
+    > steps 3-14: no path because name is not resolved yet --> revenue -5.00 each step
+    > steps 15-24: 1 unit of load via 50.0.20.1 with delay 4 vs average delay 5.00 --> revenue 20.00 each step
+  - query 4 from h1:53 to www.example.net.: total revenue 160.00
+    > steps 25-32: no path because name is not resolved yet --> revenue -5.00 each step
+    > steps 33-42: 1 unit of load via 50.0.20.2 with delay 4 vs average delay 5.00 --> revenue 20.00 each step
+  - query 6 from h1:53 to www.example.net.: total revenue -40.00
+    > steps 43-50: no path because name is not resolved yet --> revenue -5.00 each step
+
+
