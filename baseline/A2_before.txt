@@ -23,12 +23,10 @@ Adding Event 'sendquery' occurring at time 8 with parameters ['10.0.0.1', 53, '3
 = Time 1 =
 
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=1, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 = Time 2 =
 
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=2, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 = Time 3 =
 
@@ -36,14 +34,12 @@ Event 'sendpackets' occurring at time 3 with parameters ['10.0.0.1', 80, '20.0.1
 
 SenderApplication (ip 10.0.0.1, port 80): Generating packet 1 from 10.0.0.1 to 20.0.1.2 (dest port 81)
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=3, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 = Time 4 =
 
 Network n0: Forwarding packet to 20.0.1.2 over interface n0-eth1
 SenderApplication (ip 10.0.0.1, port 80): Generating packet 2 from 10.0.0.1 to 20.0.1.2 (dest port 81)
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=4, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 = Time 5 =
 
@@ -51,20 +47,17 @@ Network n0: Forwarding packet to 20.0.1.2 over interface n0-eth1
 SenderApplication (ip 10.0.0.1, port 80): Generating packet 3 from 10.0.0.1 to 20.0.1.2 (dest port 81)
 SinkApplication (ip 20.0.1.2, port 81): Received packet <type data src 10.0.0.1:50000 dst 20.0.1.2:81 ttl 254 seq 0 path (h0->n0) (n0->h1)>
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=5, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 = Time 6 =
 
 Network n0: Forwarding packet to 20.0.1.2 over interface n0-eth1
 SinkApplication (ip 20.0.1.2, port 81): Received packet <type data src 10.0.0.1:50000 dst 20.0.1.2:81 ttl 254 seq 0 path (h0->n0) (n0->h1)>
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=6, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 = Time 7 =
 
 SinkApplication (ip 20.0.1.2, port 81): Received packet <type data src 10.0.0.1:50000 dst 20.0.1.2:81 ttl 254 seq 0 path (h0->n0) (n0->h1)>
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=7, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 = Time 8 =
 
@@ -72,75 +65,98 @@ Event 'sendquery' occurring at time 8 with parameters ['10.0.0.1', 53, '30.0.1.2
 
 DnsClient (ip 10.0.0.1, port 53): Sending packet <type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www.example.com>
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=8, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 = Time 9 =
 
 Network n0: Forwarding packet to 30.0.1.2 over interface n0-eth2
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=9, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 = Time 10 =
 
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=10, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): process_packet(<type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www.example.com>)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+LocalNameServer (ip 30.0.1.2, port 53): Received packet <type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www.example.com>
+LocalNameServer (ip 30.0.1.2, port 53): Sending upstream query <type dns src 30.0.1.2:53 dst 20.0.1.2:53 payload DNS query for www.example.com>
 
 = Time 11 =
 
+Network n0: Forwarding packet to 20.0.1.2 over interface n0-eth1
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=11, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 = Time 12 =
 
+AuthoritativeNameServer (ip 20.0.1.2, port 53): Received packet <type dns src 30.0.1.2:53 dst 20.0.1.2:53 payload DNS query for www.example.com>
+AuthoritativeNameServer (ip 20.0.1.2, port 53): Sending packet <type dns src 20.0.1.2:53 dst 30.0.1.2:53 payload DNS reply for www.example.com>
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=12, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 = Time 13 =
 
+Network n0: Forwarding packet to 30.0.1.2 over interface n0-eth2
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=13, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 = Time 14 =
 
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=14, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
+LocalNameServer (ip 30.0.1.2, port 53): Received packet <type dns src 20.0.1.2:53 dst 30.0.1.2:53 payload DNS reply for www.example.com>
+LocalNameServer (ip 30.0.1.2, port 53): Sending response to client <type dns src 30.0.1.2:53 dst 10.0.0.1:53 payload DNS reply for www.example.com>
 
 = Time 15 =
 
+Network n0: Forwarding packet to 10.0.0.1 over interface n0-eth0
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=15, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 = Time 16 =
 
+DnsClient (ip 10.0.0.1, port 53): Received DNS reply for queried name www.example.com
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 1
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;www.example.com		IN	A
+
+;; ANSWER SECTION:
+www.example.com			600	IN	A	20.0.1.5
+
 LocalNameServer (ip 30.0.1.2, port 53): update(current_time=16, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): generate_packets()
 
 
 ** Simulation Report **
 
-Data-plane traffic stats for n0: fwd 4 drop 0
+Data-plane traffic stats for n0: fwd 7 drop 0
 
-Total number of DNS packets crossing the network: 1
+Total number of DNS packets crossing the network: 4
 Total number of DNS queries sent by clients: 1
-Total number of DNS replies received by clients: 0
-Total number of DNS replies including an IP for the queried name: 0
+Total number of DNS replies received by clients: 1
+Total number of DNS replies including an IP for the queried name: 1
 
 = DNS query 1 =
 
 DNS trace to resolve www.example.com for h0 at time 9
  1 h0 -> h2: query for name www.example.com (QID 1, RID h0:53/1)
+ 2 h2 -> h1: query for name www.example.com (QID 1, RID h0:53/1)
+ 3 h1 -> h2: reply (QID 1, RID h0:53/1)
+ 4 h2 -> h0: reply (QID 1, RID h0:53/1)
 
-No DNS reply received by client (ip 10.0.0.1, port 53) for name www.example.com before the end of the simulation
+Final DNS reply received by client (ip 10.0.0.1, port 53) for name www.example.com
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 1
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;www.example.com		IN	A
+
+;; ANSWER SECTION:
+www.example.com			600	IN	A	20.0.1.5
 
 
 ** Revenue Report **
 
-Total revenues: -1605.00
+Total revenues: 150.00
 + events
-  - query 1 from h0 for www.example.com at time 9 (never answered): total revenue -1600.00
-    > times 9-16: query never answered --> revenue -200.00 each step
+  - query 1 from h0 for www.example.com at time 9 (answered): total revenue 170.00
+    > times 9-14: query for www.example.com not yet answered --> revenue -5.00 each step
+    > time 15: query for www.example.com was answered with an IP address --> revenue 200.00
 + DNS packets
-  - total number of DNS packets: 1 --> revenue -5.00
+  - total number of DNS packets: 4 --> revenue -20.00
 
 
