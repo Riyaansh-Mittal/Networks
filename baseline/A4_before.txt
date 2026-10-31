@@ -7,8 +7,6 @@ Created end-host h0
 Created end-host h1
 Created end-host h2
 Created end-host h3
-LocalNameServer (ip 30.0.1.2, port 53): bind_to_host(endhost_id=h2, endhost_ip=30.0.1.2)
-LocalNameServer (ip 30.0.1.2, port 53): set_parameters({'root nameserver': {'name': 'u.root-servers.net', 'ip': '40.0.1.2', 'port': 53, 'ttl': 3600000}})
 Adding link (n0.n0-eth0 <--> h0.h0-eth0) to n0
 Adding link (n0.n0-eth0 <--> h0.h0-eth0) to end-host h0
 Adding link (n0.n0-eth1 <--> h1.h1-eth0) to n0
@@ -25,177 +23,154 @@ Adding Event 'sendquery' occurring at time 20 with parameters ['10.0.0.1', 53, '
 
 = Time 1 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=1, info_list=None)
 
 = Time 2 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=2, info_list=None)
 
 = Time 3 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=3, info_list=None)
 
 = Time 4 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=4, info_list=None)
 
 = Time 5 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=5, info_list=None)
 
 = Time 6 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=6, info_list=None)
 
 = Time 7 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=7, info_list=None)
 
 = Time 8 =
 
 Event 'sendquery' occurring at time 8 with parameters ['10.0.0.1', 53, '30.0.1.2', 53, 'www.example.com.', 'A']
 
 DnsClient (ip 10.0.0.1, port 53): Sending packet <type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www.example.com.>
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=8, info_list=None)
 
 = Time 9 =
 
 Network n0: Forwarding packet to 30.0.1.2 over interface n0-eth2
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=9, info_list=None)
 
 = Time 10 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=10, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): Received packet <type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www.example.com.>
-LocalNameServer (ip 30.0.1.2, port 53): Cache miss for www.example.com.
-LocalNameServer (ip 30.0.1.2, port 53): Sending upstream query <type dns src 30.0.1.2:53 dst 40.0.1.2:53 payload DNS query for www.example.com.>
 
 = Time 11 =
 
 Network n0: Forwarding packet to 40.0.1.2 over interface n0-eth3
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=11, info_list=None)
 
 = Time 12 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=12, info_list=None)
-AuthoritativeNameServer (ip 40.0.1.2, port 53): Received packet <type dns src 30.0.1.2:53 dst 40.0.1.2:53 payload DNS query for www.example.com.>
-AuthoritativeNameServer (ip 40.0.1.2, port 53): Sending packet <type dns src 40.0.1.2:53 dst 30.0.1.2:53 payload DNS reply for www.example.com.>
 
 = Time 13 =
 
 Network n0: Forwarding packet to 30.0.1.2 over interface n0-eth2
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=13, info_list=None)
 
 = Time 14 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=14, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): Received packet <type dns src 40.0.1.2:53 dst 30.0.1.2:53 payload DNS reply for www.example.com.>
-LocalNameServer (ip 30.0.1.2, port 53): Sending response to client <type dns src 30.0.1.2:53 dst 10.0.0.1:53 payload DNS reply for www.example.com.>
 
 = Time 15 =
 
-Network n0: Forwarding packet to 10.0.0.1 over interface n0-eth0
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=15, info_list=None)
+Network n0: Forwarding packet to 20.0.1.2 over interface n0-eth1
 
 = Time 16 =
 
-DnsClient (ip 10.0.0.1, port 53): Received DNS reply for queried name www.example.com.
-;; Got answer:
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 1
-;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
-
-;; QUESTION SECTION:
-;www.example.com.		IN	A
-
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=16, info_list=None)
 
 = Time 17 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=17, info_list=None)
+Network n0: Forwarding packet to 30.0.1.2 over interface n0-eth2
 
 = Time 18 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=18, info_list=None)
 
 = Time 19 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=19, info_list=None)
+Network n0: Forwarding packet to 10.0.0.1 over interface n0-eth0
 
 = Time 20 =
 
 Event 'sendquery' occurring at time 20 with parameters ['10.0.0.1', 53, '30.0.1.2', 53, 'www2.example.com.', 'A']
 
+DnsClient (ip 10.0.0.1, port 53): Received DNS reply for queried name www.example.com.
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 1
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
+
+;; QUESTION SECTION:
+;www.example.com.		IN	A
+
+;; ANSWER SECTION:
+www.example.com.		7200	IN	A	20.0.1.3
+
+;; AUTHORITY SECTION:
+example.com.			7196	IN	NS	ns1.example.com.
+
+;; ADDITIONAL SECTION:
+ns1.example.com.		7196	IN	A	20.0.1.2
+
 DnsClient (ip 10.0.0.1, port 53): Sending packet <type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www2.example.com.>
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=20, info_list=None)
 
 = Time 21 =
 
 Network n0: Forwarding packet to 30.0.1.2 over interface n0-eth2
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=21, info_list=None)
 
 = Time 22 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=22, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): Received packet <type dns src 10.0.0.1:53 dst 30.0.1.2:53 payload DNS query for www2.example.com.>
-LocalNameServer (ip 30.0.1.2, port 53): Cache miss for www2.example.com.
-LocalNameServer (ip 30.0.1.2, port 53): Sending upstream query <type dns src 30.0.1.2:53 dst 40.0.1.2:53 payload DNS query for www2.example.com.>
 
 = Time 23 =
 
-Network n0: Forwarding packet to 40.0.1.2 over interface n0-eth3
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=23, info_list=None)
+Network n0: Forwarding packet to 20.0.1.2 over interface n0-eth1
 
 = Time 24 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=24, info_list=None)
-AuthoritativeNameServer (ip 40.0.1.2, port 53): Received packet <type dns src 30.0.1.2:53 dst 40.0.1.2:53 payload DNS query for www2.example.com.>
-AuthoritativeNameServer (ip 40.0.1.2, port 53): Sending packet <type dns src 40.0.1.2:53 dst 30.0.1.2:53 payload DNS reply for www2.example.com.>
 
 = Time 25 =
 
 Network n0: Forwarding packet to 30.0.1.2 over interface n0-eth2
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=25, info_list=None)
 
 = Time 26 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=26, info_list=None)
-LocalNameServer (ip 30.0.1.2, port 53): Received packet <type dns src 40.0.1.2:53 dst 30.0.1.2:53 payload DNS reply for www2.example.com.>
-LocalNameServer (ip 30.0.1.2, port 53): Sending response to client <type dns src 30.0.1.2:53 dst 10.0.0.1:53 payload DNS reply for www2.example.com.>
 
 = Time 27 =
 
 Network n0: Forwarding packet to 10.0.0.1 over interface n0-eth0
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=27, info_list=None)
 
 = Time 28 =
 
 DnsClient (ip 10.0.0.1, port 53): Received DNS reply for queried name www2.example.com.
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 2
-;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
+;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 1, ADDITIONAL: 1
 
 ;; QUESTION SECTION:
 ;www2.example.com.		IN	A
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=28, info_list=None)
+;; ANSWER SECTION:
+www2.example.com.		600	IN	CNAME	www.example.com.
+www.example.com.		7200	IN	A	20.0.1.3
+
+;; AUTHORITY SECTION:
+example.com.			7188	IN	NS	ns1.example.com.
+
+;; ADDITIONAL SECTION:
+ns1.example.com.		7188	IN	A	20.0.1.2
+
 
 = Time 29 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=29, info_list=None)
 
 = Time 30 =
 
-LocalNameServer (ip 30.0.1.2, port 53): update(current_time=30, info_list=None)
 
 
 ** Simulation Report **
 
-Data-plane traffic stats for n0: fwd 8 drop 0
+Data-plane traffic stats for n0: fwd 10 drop 0
 
-Total number of DNS packets crossing the network: 8
+Total number of DNS packets crossing the network: 10
 Total number of DNS queries sent by clients: 2
 Total number of DNS replies received by clients: 2
-Total number of DNS replies including an IP for the queried name: 0
+Total number of DNS replies including an IP for the queried name: 2
 
 = DNS query 1 =
 
@@ -203,44 +178,65 @@ DNS trace to resolve www.example.com. for h0 at time 9
  1 h0 -> h2: query for name www.example.com. (QID 1, RID h0:53/1)
  2 h2 -> h3: query for name www.example.com. (QID 1, RID h0:53/1)
  3 h3 -> h2: reply (QID 1, RID h0:53/1)
- 4 h2 -> h0: reply (QID 1, RID h0:53/1)
+ 4 h2 -> h1: query for name www.example.com. (QID 1, RID h0:53/1)
+ 5 h1 -> h2: reply (QID 1, RID h0:53/1)
+ 6 h2 -> h0: reply (QID 1, RID h0:53/1)
 
 Final DNS reply received by client (ip 10.0.0.1, port 53) for name www.example.com.
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 1
-;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
 
 ;; QUESTION SECTION:
 ;www.example.com.		IN	A
+
+;; ANSWER SECTION:
+www.example.com.		7200	IN	A	20.0.1.3
+
+;; AUTHORITY SECTION:
+example.com.			7196	IN	NS	ns1.example.com.
+
+;; ADDITIONAL SECTION:
+ns1.example.com.		7196	IN	A	20.0.1.2
 
 = DNS query 2 =
 
 DNS trace to resolve www2.example.com. for h0 at time 21
  1 h0 -> h2: query for name www2.example.com. (QID 2, RID h0:53/2)
- 2 h2 -> h3: query for name www2.example.com. (QID 2, RID h0:53/2)
- 3 h3 -> h2: reply (QID 2, RID h0:53/2)
+ 2 h2 -> h1: query for name www2.example.com. (QID 2, RID h0:53/2)
+ 3 h1 -> h2: reply (QID 2, RID h0:53/2)
  4 h2 -> h0: reply (QID 2, RID h0:53/2)
 
 Final DNS reply received by client (ip 10.0.0.1, port 53) for name www2.example.com.
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 2
-;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
+;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 1, ADDITIONAL: 1
 
 ;; QUESTION SECTION:
 ;www2.example.com.		IN	A
 
+;; ANSWER SECTION:
+www2.example.com.		600	IN	CNAME	www.example.com.
+www.example.com.		7200	IN	A	20.0.1.3
+
+;; AUTHORITY SECTION:
+example.com.			7188	IN	NS	ns1.example.com.
+
+;; ADDITIONAL SECTION:
+ns1.example.com.		7188	IN	A	20.0.1.2
+
 
 ** Revenue Report **
 
-Total revenues: -60.00
+Total revenues: 270.00
 + events
-  - query 1 from h0 for www.example.com. at time 9 (answered): total revenue -10.00
-    > times 9-14: query for www.example.com. not yet answered --> revenue -5.00 each step
-    > time 15: query for www.example.com. was answered with no IP address --> revenue 20.00
-  - query 2 from h0 for www2.example.com. at time 21 (answered): total revenue -10.00
+  - query 1 from h0 for www.example.com. at time 9 (answered): total revenue 150.00
+    > times 9-18: query for www.example.com. not yet answered --> revenue -5.00 each step
+    > time 19: query for www.example.com. was answered with an IP address --> revenue 200.00
+  - query 2 from h0 for www2.example.com. at time 21 (answered): total revenue 170.00
     > times 21-26: query for www2.example.com. not yet answered --> revenue -5.00 each step
-    > time 27: query for www2.example.com. was answered with no IP address --> revenue 20.00
+    > time 27: query for www2.example.com. was answered with an IP address --> revenue 200.00
 + DNS packets
-  - total number of DNS packets: 8 --> revenue -40.00
+  - total number of DNS packets: 10 --> revenue -50.00
 
 
