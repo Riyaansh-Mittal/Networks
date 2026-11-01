@@ -187,6 +187,9 @@ class LocalNameServer(Application):
         self._upstream_responses = []
         self._cache = {}
         self._referral_cache = {}
+        # Rotate cached A-record order so clients that use the first address
+        # do not repeatedly select the same content server.
+        self._cache_rotation = {}
         self._current_time = 0
         # Simulation time is advanced once per end-host iteration. A query
         # unanswered for this many ticks is treated as a failed nameserver.
@@ -502,8 +505,8 @@ class LocalNameServer(Application):
         outgoing_packets.append(self._create_client_response(
             state["client_query"],
             answer if status_code == DnsStatusCodes.NOERROR.value else [],
-            authority,
-            additional,
+            authority if not answer else [],
+            additional if not answer else [],
             status_code,
         ))
 
@@ -779,6 +782,27 @@ class LocalNameServer(Application):
             cached = self._get_cached_response(key)
             if cached is not None:
                 answer, authority, additional = cached
+
+                # Keep the cache itself in its original order, but rotate the
+                # A records in each reply. ContentClient selects the first A
+                # record for a session, so this distributes repeated sessions
+                # across the available addresses.
+                a_indexes = [
+                    index for index, record in enumerate(answer)
+                    if record.get_record_type() == "A"
+                ]
+                if len(a_indexes) > 1:
+                    offset = self._cache_rotation.get(key, 1) % len(a_indexes)
+                    if offset:
+                        a_records = [answer[index] for index in a_indexes]
+                        a_records = a_records[offset:] + a_records[:offset]
+                        answer = list(answer)
+                        for index, record in zip(a_indexes, a_records):
+                            answer[index] = record
+                    self._cache_rotation[key] = (
+                        self._cache_rotation.get(key, 1) + 1
+                    )
+
                 self._pending_responses.append({
                     "cached_response": self._create_client_response(
                         packet, answer, authority, additional
