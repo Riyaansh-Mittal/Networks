@@ -77,15 +77,44 @@ class AuthoritativeNameServer(Application):
     def _is_authoritative_for(self, dns_name):
         return self._get_most_specific_zone(dns_name) is not None
 
+    DEFAULT_TTL = 3600
+
+    @classmethod
+    def _ns_ttl(cls, ns_record):
+        ttl = ns_record.get("namettl")
+        if ttl is None:
+            ttl = ns_record.get("ipttl")
+        return cls.DEFAULT_TTL if ttl is None else ttl
+
+    @classmethod
+    def _glue_ttl(cls, ns_record):
+        ttl = ns_record.get("ipttl")
+        if ttl is None:
+            ttl = ns_record.get("namettl")
+        return cls.DEFAULT_TTL if ttl is None else ttl
+
     def _get_glue_record(self, ns_record):
-        if ns_record.get("ip") is None or ns_record.get("ipttl") is None:
+        if ns_record.get("ip") is None or ns_record.get("name") is None:
             return None
         return DnsResourceRecord(
             dnsName=self._display_name(self._normalize_name(ns_record["name"])),
             recordType="A",
-            dnsTtl=ns_record["ipttl"],
+            dnsTtl=self._glue_ttl(ns_record),
             rrData=ns_record["ip"],
         )
+
+    def _name_exists(self, name):
+        name = self._normalize_name(name)
+        if name == ".":
+            return True
+        zone = self._get_most_specific_zone(name)
+        if zone is not None and name == zone:
+            return True
+        for table in (self._a_records, self._cname_records, self._ns_records):
+            for key in table:
+                if key == name or key.endswith("." + name):
+                    return True
+        return False
 
     def _get_dns_records(self, dns_name):
         answer, authority, additional = [], [], []
@@ -108,7 +137,7 @@ class AuthoritativeNameServer(Application):
                     continue
                 authority.append(DnsResourceRecord(
                     dnsName=self._display_name(delegation), recordType="NS",
-                    dnsTtl=ns["namettl"],
+                    dnsTtl=self._ns_ttl(ns),
                     rrData=self._display_name(self._normalize_name(ns["name"]))
                 ))
                 additional.append(glue)
@@ -154,10 +183,17 @@ class AuthoritativeNameServer(Application):
             )
             reply = DnsPacket(self._ip, query_pkt.get_source())
             reply.set_destination_port(query_pkt.get_source_port())
+            status = DnsStatusCodes.NOERROR.value
+            if not answer and not authority:
+                if not self._is_authoritative_for(question.get_dns_name()):
+                    status = DnsStatusCodes.REFUSED.value
+                elif not self._name_exists(question.get_dns_name()):
+                    status = DnsStatusCodes.NXDOMAIN.value
             reply.set_payload(DnsPayload(
                 header=DnsHeader(
                     queryId=query_header.get_query_id(),
                     resolutionId=query_header.get_resolution_id(),
+                    statusCode=status,
                     dnsType=DnsTypes.RESPONSE.value,
                     aa=(self._is_authoritative_for(question.get_dns_name())
                         and not authority),
@@ -190,6 +226,12 @@ class LocalNameServer(Application):
         # Rotate cached A-record order so clients that use the first address
         # do not repeatedly select the same content server.
         self._cache_rotation = {}
+        # Resolutions in progress, keyed like the cache. Identical queries
+        # arriving meanwhile wait for that resolution instead of repeating it.
+        self._inflight = {}
+        # Short-lived cache of NXDOMAIN results (records never change during
+        # a simulation, so repeating the lookup cannot give a new answer).
+        self._negative_cache = {}
         self._current_time = 0
         # Simulation time is advanced once per end-host iteration. A query
         # unanswered for this many ticks is treated as a failed nameserver.
@@ -217,6 +259,43 @@ class LocalNameServer(Application):
     def update(self, current_time, info_list):
         self._current_time = current_time
 
+    def _seed_root_referral(self, state):
+        root = self._root_nameserver or {}
+        name = root.get("name")
+        ttl = root.get("ttl")
+        if not name or ttl is None or ttl - self._current_time <= 0:
+            return
+        ns = DnsResourceRecord(dnsName=".", recordType="NS", dnsTtl=ttl,
+                               rrData=name)
+        glue = DnsResourceRecord(dnsName=name,
+                                 recordType="A", dnsTtl=ttl, rrData=root["ip"])
+        state["best_zone"] = "."
+        state["best_authority_entries"] = [{"record": ns, "expiry": ttl}]
+        state["best_additional_entries"] = [{"record": glue, "expiry": ttl}]
+
+    def _rotate_answer(self, key, answer):
+        """Round-robin the A records of every reply for a name.
+
+        ContentClient uses the first address(es) of a reply, so rotating the
+        order of the (semantically unordered) RRset spreads sessions over
+        the available servers, including sessions answered at the same time.
+        """
+        a_indexes = [i for i, r in enumerate(answer)
+                     if r.get_record_type() == "A"]
+        count = self._cache_rotation.get(key, 0)
+        self._cache_rotation[key] = count + 1
+        if len(a_indexes) < 2:
+            return answer
+        offset = count % len(a_indexes)
+        if not offset:
+            return answer
+        a_records = [answer[i] for i in a_indexes]
+        a_records = a_records[offset:] + a_records[:offset]
+        answer = list(answer)
+        for i, record in zip(a_indexes, a_records):
+            answer[i] = record
+        return answer
+
     def _get_query_key(self, packet):
         payload = packet.get_payload()
         header = payload.get_header()
@@ -241,17 +320,24 @@ class LocalNameServer(Application):
         entries = []
         for record in records:
             ttl = record.get_dns_ttl()
-            if ttl is None or ttl <= 0:
+            if ttl is None:
+                continue
+            if ttl <= 0:
+                # TTL 0: usable for the current reply only, never cached.
+                entries.append({"record": record, "zero": True,
+                                "expiry": self._current_time})
                 continue
             entries.append({"record": record, "expiry": self._current_time + ttl})
         return entries
 
-    def _records_from_entries(self, entries):
+    def _records_from_entries(self, entries, include_zero=False):
         records = []
         for entry in entries:
             remaining = entry["expiry"] - self._current_time
             if remaining > 0:
                 records.append(self._copy_record_with_ttl(entry["record"], remaining))
+            elif include_zero and entry.get("zero"):
+                records.append(self._copy_record_with_ttl(entry["record"], 0))
         return records
 
     def _cache_response(self, key, answer_entries, authority_entries,
@@ -480,7 +566,8 @@ class LocalNameServer(Application):
 
     def _finish_resolution(self, state, outgoing_packets,
                         status_code=DnsStatusCodes.NOERROR.value):
-        answer = self._records_from_entries(state["answer_entries"])
+        answer = self._records_from_entries(state["answer_entries"],
+                                            include_zero=True)
         authority = self._records_from_entries(state["best_authority_entries"])
         additional = self._records_from_entries(state["best_additional_entries"])
 
@@ -489,7 +576,8 @@ class LocalNameServer(Application):
         )
 
         # Cache only successful responses.
-        if status_code == DnsStatusCodes.NOERROR.value and answer:
+        if (status_code == DnsStatusCodes.NOERROR.value and answer
+                and not any(e.get("zero") for e in state["answer_entries"])):
             key = self._get_cache_key(
                 state["client_query"].get_payload().get_question().get_dns_name(),
                 state["client_query"].get_payload().get_question().get_question_type(),
@@ -502,13 +590,59 @@ class LocalNameServer(Application):
                 list(state["best_additional_entries"]),
             )
 
-        outgoing_packets.append(self._create_client_response(
-            state["client_query"],
-            answer if status_code == DnsStatusCodes.NOERROR.value else [],
-            authority if not answer else [],
-            additional if not answer else [],
-            status_code,
-        ))
+        q = state["client_query"].get_payload().get_question()
+        key = self._get_cache_key(q.get_dns_name(), q.get_question_type())
+        if status_code == DnsStatusCodes.NXDOMAIN.value:
+            self._cache_negative(key, state)
+        if self._inflight.get(key) is state:
+            del self._inflight[key]
+
+        # Answer the client that started this resolution and every client
+        # that asked the same question while it was in progress.
+        for client_query in [state["client_query"]] + state["waiters"]:
+            reply_answer = answer
+            if status_code == DnsStatusCodes.NOERROR.value and answer:
+                reply_answer = self._rotate_answer(key, answer)
+            outgoing_packets.append(self._create_client_response(
+                client_query,
+                reply_answer if status_code in (DnsStatusCodes.NOERROR.value,
+                                                DnsStatusCodes.NXDOMAIN.value)
+                else [],
+                authority,
+                additional,
+                status_code,
+            ))
+
+    NEGATIVE_TTL = 30
+
+    def _cache_negative(self, key, state):
+        entries = (list(state["answer_entries"])
+                   + list(state["best_authority_entries"])
+                   + list(state["best_additional_entries"]))
+        expiry = self._current_time + self.NEGATIVE_TTL
+        for entry in entries:
+            expiry = min(expiry, entry["expiry"])
+        if expiry <= self._current_time:
+            return
+        self._negative_cache[key] = {
+            "expiry": expiry,
+            "answer": list(state["answer_entries"]),
+            "authority": list(state["best_authority_entries"]),
+            "additional": list(state["best_additional_entries"]),
+        }
+
+    def _get_negative_response(self, key):
+        cached = self._negative_cache.get(key)
+        if cached is None:
+            return None
+        if cached["expiry"] <= self._current_time:
+            del self._negative_cache[key]
+            return None
+        authority, additional = self._pair_referral_records(
+            self._records_from_entries(cached["authority"]),
+            self._records_from_entries(cached["additional"]))
+        return (self._records_from_entries(cached["answer"]),
+                authority, additional)
 
     def _send_query_to_nameserver(self, state, dns_name, nameserver_ip,
                                   nameserver_port, outgoing_packets):
@@ -543,7 +677,10 @@ class LocalNameServer(Application):
             "best_zone": None,
             "best_authority_entries": [],
             "best_additional_entries": [],
+            "waiters": [],
         }
+        self._inflight[self._get_cache_key(
+            question.get_dns_name(), question.get_question_type())] = state
         referral = self._get_cached_referral(name)
         if referral is not None:
             state["fallback_nameservers"] = list(referral["nameservers"])
@@ -552,6 +689,8 @@ class LocalNameServer(Application):
             )
             if self._send_next_nameserver(state, name, outgoing_packets):
                 return
+        else:
+            self._seed_root_referral(state)
         self._send_query_to_nameserver(
             state, name, self._root_nameserver["ip"],
             self._root_nameserver["port"], outgoing_packets,
@@ -652,6 +791,21 @@ class LocalNameServer(Application):
             authority = payload.get_authority()
             additional = payload.get_additional()
 
+            status = payload.get_header().get_status_code()
+            if status == DnsStatusCodes.NXDOMAIN.value:
+                state["answer_entries"].extend(
+                    self._make_expiring_entries(answer))
+                self._finish_resolution(
+                    state, outgoing_packets, DnsStatusCodes.NXDOMAIN.value)
+                continue
+            if status != DnsStatusCodes.NOERROR.value:
+                # REFUSED / SERVFAIL / ...: try another server, else fail.
+                if not self._send_next_nameserver(
+                        state, state["current_name"], outgoing_packets):
+                    self._finish_resolution(
+                        state, outgoing_packets, DnsStatusCodes.SERVFAIL.value)
+                continue
+
             # Cache and process referral information.
             if authority:
                 self._cache_referral(
@@ -733,7 +887,12 @@ class LocalNameServer(Application):
                 state["current_name"],
                 outgoing_packets
             ):
-                self._finish_resolution(state, outgoing_packets)
+                # A referral that leads nowhere new is a failure; an
+                # authoritative empty answer is a legitimate NODATA.
+                self._finish_resolution(
+                    state, outgoing_packets,
+                    DnsStatusCodes.SERVFAIL.value if referral_ns
+                    else DnsStatusCodes.NOERROR.value)
 
         self._upstream_responses = []
 
@@ -756,14 +915,27 @@ class LocalNameServer(Application):
                 state["current_name"],
                 outgoing_packets
             ):
-                self._finish_resolution(state, outgoing_packets)
+                self._finish_resolution(
+                    state, outgoing_packets, DnsStatusCodes.SERVFAIL.value)
 
         # Start newly received client queries.
         for client_query in self._pending_client_queries:
-            self._start_resolution(
-                client_query,
-                outgoing_packets
-            )
+            q = client_query.get_payload().get_question()
+            key = self._get_cache_key(q.get_dns_name(), q.get_question_type())
+            cached = self._get_cached_response(key)
+            if cached is not None:
+                # answered by a resolution that finished earlier this tick
+                answer, authority, additional = cached
+                outgoing_packets.append(self._create_client_response(
+                    client_query, self._rotate_answer(key, answer),
+                    authority, additional))
+            elif key in self._inflight:
+                self._inflight[key]["waiters"].append(client_query)
+            else:
+                self._start_resolution(
+                    client_query,
+                    outgoing_packets
+                )
 
         self._pending_client_queries = []
 
@@ -783,25 +955,7 @@ class LocalNameServer(Application):
             if cached is not None:
                 answer, authority, additional = cached
 
-                # Keep the cache itself in its original order, but rotate the
-                # A records in each reply. ContentClient selects the first A
-                # record for a session, so this distributes repeated sessions
-                # across the available addresses.
-                a_indexes = [
-                    index for index, record in enumerate(answer)
-                    if record.get_record_type() == "A"
-                ]
-                if len(a_indexes) > 1:
-                    offset = self._cache_rotation.get(key, 1) % len(a_indexes)
-                    if offset:
-                        a_records = [answer[index] for index in a_indexes]
-                        a_records = a_records[offset:] + a_records[:offset]
-                        answer = list(answer)
-                        for index, record in zip(a_indexes, a_records):
-                            answer[index] = record
-                    self._cache_rotation[key] = (
-                        self._cache_rotation.get(key, 1) + 1
-                    )
+                answer = self._rotate_answer(key, answer)
 
                 self._pending_responses.append({
                     "cached_response": self._create_client_response(
@@ -809,7 +963,16 @@ class LocalNameServer(Application):
                     )
                 })
             else:
-                self._pending_client_queries.append(packet)
+                negative = self._get_negative_response(key)
+                if negative is not None:
+                    answer, authority, additional = negative
+                    self._pending_responses.append({
+                        "cached_response": self._create_client_response(
+                            packet, answer, authority, additional,
+                            DnsStatusCodes.NXDOMAIN.value)
+                    })
+                else:
+                    self._pending_client_queries.append(packet)
         elif header.get_dns_type() == DnsTypes.RESPONSE.value:
             self._upstream_responses = getattr(self, "_upstream_responses", [])
             self._upstream_responses.append(packet)
