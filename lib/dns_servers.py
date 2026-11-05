@@ -229,6 +229,9 @@ class LocalNameServer(Application):
         # Resolutions in progress, keyed like the cache. Identical queries
         # arriving meanwhile wait for that resolution instead of repeating it.
         self._inflight = {}
+        # Queries sent to nameservers get their own identifiers (101, 102, ...),
+        # distinct from the identifier of the client query being resolved.
+        self._next_query_id = 100
         # Short-lived cache of NXDOMAIN results (records never change during
         # a simulation, so repeating the lookup cannot give a new answer).
         self._negative_cache = {}
@@ -320,9 +323,7 @@ class LocalNameServer(Application):
         entries = []
         for record in records:
             ttl = record.get_dns_ttl()
-            if ttl is None:
-                continue
-            if ttl <= 0:
+            if not isinstance(ttl, (int, float)) or isinstance(ttl, bool) or ttl <= 0:
                 # TTL 0: usable for the current reply only, never cached.
                 entries.append({"record": record, "zero": True,
                                 "expiry": self._current_time})
@@ -552,9 +553,10 @@ class LocalNameServer(Application):
         )
         packet = DnsPacket(self._ip, nameserver_ip)
         packet.set_destination_port(nameserver_port)
+        self._next_query_id += 1
         packet.set_payload(DnsPayload(
             header=DnsHeader(
-                queryId=original_header.get_query_id(),
+                queryId=self._next_query_id,
                 resolutionId=original_header.get_resolution_id(),
                 dnsType=DnsTypes.QUERY.value,
                 rd=False,
@@ -891,7 +893,9 @@ class LocalNameServer(Application):
                 # authoritative empty answer is a legitimate NODATA.
                 self._finish_resolution(
                     state, outgoing_packets,
-                    DnsStatusCodes.SERVFAIL.value if referral_ns
+                    DnsStatusCodes.SERVFAIL.value
+                    if referral_ns or any(r.get_record_type() == "NS"
+                                          for r in authority)
                     else DnsStatusCodes.NOERROR.value)
 
         self._upstream_responses = []
